@@ -30,4 +30,7 @@ app.get('/response', (c) => {
   return new Response('Good morning')
 })
 
-export default app;
+export default {
+  port: 8080,
+  fetch: app.fetch,
+}
