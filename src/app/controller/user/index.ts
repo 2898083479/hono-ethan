@@ -1,12 +1,11 @@
 import { Hono } from "hono";
-import { serveStatic } from 'hono/bun';
 import { ResponseStatus } from "../../response";
 import { CreateUserForm } from "../../form/create-user";
 import { createUser } from "../../service/user";
 import { basicAuth } from 'hono/basic-auth';
 
-const app = new Hono().basePath('/users');
-app.use(
+const userApp = new Hono().basePath('/users');
+userApp.use(
     '/*',
     basicAuth({
         username: 'ethan',
@@ -14,7 +13,7 @@ app.use(
     })
 )
 
-app.post('/', async (c) => {
+userApp.post('/', async (c) => {
     const form = await c.req.json<CreateUserForm>();
     const user = await createUser(form);
     return c.json({
@@ -24,7 +23,4 @@ app.post('/', async (c) => {
     });
 });
 
-export default {
-    port: 8080,
-    fetch: app.fetch,
-}
+export default userApp;

@@ -1,7 +1,11 @@
 import { Hono } from 'hono'
 import Page from './app/page';
+import userApp from './app/controller/user';
+import adminApp from './app/controller/admin';
 
 const app = new Hono()
+app.route('/users', userApp)
+app.route('/admin', adminApp)
 
 app.get('/', (c) => {
   return c.text('Hello Hono!')
