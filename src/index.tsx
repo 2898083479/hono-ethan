@@ -1,11 +1,33 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors';
 import Page from './app/page';
 import userApp from './app/controller/user';
 import adminApp from './app/controller/admin';
+import { requestLogger } from './app/middleware/logger';
+import { testMiddleware } from './app/middleware/testMiddleware';
 
-const app = new Hono()
+const app = new Hono(
+  {
+    strict: false
+  }
+)
+
+console.log("Starting server...")
+
 app.route('/users', userApp)
-app.route('/admin', adminApp)
+app.route('/admins', adminApp)
+
+console.log("Load sub routes")
+
+app.use('*', requestLogger);
+
+app.use('*', async (c, next) => {
+  const middleware = cors({
+    origin: '*'
+  })
+  return middleware(c, next)
+})
+// app.use('*', testMiddleware);
 
 app.get('/', (c) => {
   return c.text('Hello Hono!')
@@ -27,12 +49,13 @@ app.get('/search/:id', (c) => {
 })
 
 app.get('/page', (c) => {
-  return c.html(<Page/>)
+  return c.html(<Page />)
 })
 
 app.get('/response', (c) => {
   return new Response('Good morning')
 })
+
 
 export default {
   port: 8080,
